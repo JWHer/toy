@@ -1,0 +1,30 @@
+{
+    "task": "mnist",
+    "model": {
+        "backbone": {
+            "name": "mnist"
+        }
+    },
+    "optimizer":{
+        "name": "SGD",
+        "lr": 0.01,
+        "momentum": 0.5
+    },
+    "dataset": {
+        "train": {
+            "root_dir": "./data/",
+            "compression": "train-images-idx3-ubyte.gz",
+            "annotation": "train-labels-idx1-ubyte.gz",
+            "batch_size": 16
+        },
+        "test": {
+            "root_dir": "./data/",
+            "compression": "t10k-images-idx3-ubyte.gz",
+            "annotation": "t10k-labels-idx1-ubyte.gz",
+            "batch_size": 16
+        }
+    },
+    "max_epoch": 10,
+    "classes": ["0","1","2","3","4","5","6","7","8","9"],
+    "log_dir": "./result/mnist/"
+}
