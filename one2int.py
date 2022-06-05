@@ -47,12 +47,10 @@ class Solver:
 
         
     def _find(self, iteration):
-        keys = list(self.map.keys())
-        values = [ value['answer'] for value in self.map.values() ]
-        befores = [ idx for idx, value in enumerate(values) if value==(iteration-1) ]
-        
-        for idx in befores:
-            key = keys[idx]
+        items = list(self.map.items())
+        for key, value in items:
+            # find only in previous answer
+            if value['answer']!=(iteration-1): continue
             for algorithm in self.algorithms:
                 algorithm(key, iteration)
                 # pruning
