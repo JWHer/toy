@@ -95,7 +95,7 @@ class Solver:
             }
             
     def _concatenate(self, key, iteration):
-        value = key*int('1'*iteration)
+        value = self.N*int('1'*iteration)
         if value not in self.map:
             self.map[value]={
                 "answer": iteration,
