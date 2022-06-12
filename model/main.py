@@ -29,7 +29,7 @@ def parse_config(kwargs:argparse.Namespace) -> dict:
         model_config = json.load(config_file)
     kwargs.update(model_config)
 
-    return kwargs
+    return {k: v for k, v in kwargs.items() if v is not None}
 
 @logger.catch
 def main(**kwargs):
@@ -41,9 +41,9 @@ def main(**kwargs):
 
     task = kwargs.pop("task")
     trainer = TrainerFactory.get_trainer(task, **kwargs)
-    trainer.before_train()
-    trainer.show_data(idx=0, save=True)
-    # trainer.train()
+    # trainer.before_train()
+    # trainer.show_data(idx=0, save=True)
+    trainer.train()
 
 if __name__ == "__main__":
     
