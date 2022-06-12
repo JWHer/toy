@@ -4,4 +4,6 @@ model/data/*
 model/result/*
 model/torchvision/*
 
+data
+result
 spark
