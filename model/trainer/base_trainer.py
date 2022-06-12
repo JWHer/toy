@@ -2,7 +2,7 @@ import os, torch, shutil, copy
 import torch.utils.data
 from abc import ABC, abstractmethod
 from loguru import logger
-from thop import profile
+# from thop import profile
 
 from optimizer.base_optimizer import OptimizerFactory
 
@@ -10,7 +10,8 @@ class Trainer(ABC):
     DEFAULT_CONFIG = {
         'lr_cfg': None,
         'start_epoch': 0,
-        'best_ap': 0
+        'best_ap': 0,
+        'log_dir': '.'
     }
 
     def __init__(self, **kwargs) -> None:
@@ -21,6 +22,13 @@ class Trainer(ABC):
             setattr(self, key, value)
         self._set_defaults()
         self.model:torch.nn.Module = None
+
+    # TODO: add training logger adaptor
+    @property
+    def tensorboard(self): # -> SummaryWriter:
+        if not hasattr(self, '_tblogger'):
+            self._tblogger = SummaryWriter(self.log_dir)
+        return self._tblogger
         
     def _set_defaults(self):
         for key, value in Trainer.DEFAULT_CONFIG.items():
@@ -116,7 +124,10 @@ class Trainer(ABC):
 
         plt.title(title)
         plt.imshow(img)
-        if save: plt.savefig(f'{self.log_dir}/{title}.png')
+        if save:
+            if not os.path.isdir(self.log_dir):
+                os.makedirs(self.log_dir)
+            plt.savefig(os.path.join(self.log_dir, f"{title}.png"))
         else: plt.show()
 
 class TrainerFactory:

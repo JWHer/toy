@@ -5,7 +5,7 @@ from PIL import Image
 from loguru import logger
 from torchvision import datasets, transforms
 from torch.utils.data.dataset import Dataset
-from torch.utils.tensorboard import SummaryWriter
+# from torch.utils.tensorboard import SummaryWriter
 from sklearn.metrics import precision_recall_fscore_support
 
 from trainer.base_trainer import Trainer
@@ -73,7 +73,6 @@ class MnistTrainer(Trainer):
         self.test_dataloader = self._get_dataloader('test')
         self.optimizer = self._get_optimizer()
         # self.lr = self._get_lr()
-        self.tblogger = SummaryWriter(self.log_dir)
 
     def train(self):
         self.before_train()
@@ -84,7 +83,8 @@ class MnistTrainer(Trainer):
         logger.info(
             "Training of experiment is done and the best AP is {:.2f}".format(self.best_ap * 100)
         )
-        # self.tblogger.add_scalar('map', self.map, self.epoch)
+        if 'tensorboard' in self.cfg:
+            self.tensorboard.add_scalar('map', self.map, self.epoch)
 
     def evaluate(self):
         logger.info("Start Evaluation")
@@ -115,7 +115,8 @@ class MnistTrainer(Trainer):
         logger.info('Evaluation scores')
         for key, value in metrics.items():
             logger.info(f"{key:<20}{value:.6f}")
-            self.tblogger.add_scalar(f'val/{key}', value, self.epoch)
+            if 'tensorboard' in self.cfg:
+                self.tensorboard.add_scalar(f'val/{key}', value, self.epoch)
         return metrics
 
     def _eval_metric(self, logits, labels, training=False) -> dict:
@@ -153,21 +154,8 @@ class MnistTrainer(Trainer):
         return dataset
 
     # def show_data(self, name='train', idx=None, save=False):
-    #     import random
-    #     from matplotlib import pyplot as plt
-    #     if name=='train': dataset = self.train_dataloader.dataset
-    #     elif name=='test': dataset = self.test_dataloader.dataset
-
-    #     if idx is None:
-    #         idx = random.randint(0,len(dataset))
-    #     title = f"{name} dataset idx-{idx} label-{label.item()}"
-    #     img, label = dataset[idx]
-    #     img = np.asarray(img).squeeze()
-
-    #     plt.title(title)
-    #     plt.imshow(img)
-    #     if save: plt.savefig(f'{self.log_dir}/{title}.png')
-    #     else: plt.show()
+    #     # you can override here
+    #     pass
 
 class MnistDataset(Dataset):
     def __init__(self, images:torch.Tensor, labels:torch.Tensor, transform=None):
