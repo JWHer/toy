@@ -13,6 +13,14 @@
             "justMyCode": true
         },
         {
+            "name": "model",
+            "type": "python",
+            "request": "launch",
+            "program": "model/main.py",
+            "console": "integratedTerminal",
+            "args": ["model/configs/mnist.json"]
+        },
+        {
             "name": "g++ - 활성 파일 빌드 및 디버그",
             "type": "cppdbg",
             "request": "launch",
