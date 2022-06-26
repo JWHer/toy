@@ -11,9 +11,12 @@ plugins {
     id 'application'
 }
 
+def LIBTORCH_VERSION = "1.11";
+
 repositories {
     // Use Maven Central for resolving dependencies.
     mavenCentral()
+    jcenter()
 }
 
 dependencies {
@@ -22,14 +25,45 @@ dependencies {
 
     // This dependency is used by the application.
     implementation 'com.google.guava:guava:30.1.1-jre'
+    implementation 'com.googlecode.json-simple:json-simple:1.1.1'
 
+    // implementation "ai.djl:api:1.11.0"
+    // implementation "ai.djl.pytorch:pytorch-engine"
+    // implementation 'ai.djl.pytorch:pytorch-native-cpu:1.11.0'
+    implementation "ai.djl:api:0.4.0"
+    implementation "ai.djl:repository:0.4.0"
+    runtimeOnly "ai.djl.pytorch:pytorch-model-zoo:0.4.0"
+    runtimeOnly "ai.djl.pytorch:pytorch-native-auto:1.4.0"
+    
+    implementation "org.pytorch:pytorch_java_only:${LIBTORCH_VERSION}"
     // implementation 'com.microsoft.onnxruntime:onnxruntime:1.11.0'
-    implementation 'com.microsoft.onnxruntime:onnxruntime_gpu:1.11.0'
+    // implementation 'com.microsoft.onnxruntime:onnxruntime_gpu:1.11.0'
+
+    // runtimeOnly 'ai.djl.pytorch:pytorch-native-auto:1.9.1'
 }
+
+def LIBTORCH_HOME = '/Users/jwher/dev/toy/java/libtorch' // System.getenv('LIBTORCH_HOME')
+if (!LIBTORCH_HOME) {
+  throw new RuntimeException('LIBTORCH_HOME not present in environment.');
+}
+def BUILD_VERSION_FILE = new File(LIBTORCH_HOME, "build-version");
+if (!BUILD_VERSION_FILE.isFile()) {
+  throw new RuntimeException(
+    "Cannot find ${BUILD_VERSION_FILE}.  " +
+    "Make sure LIBTORCH_HOME refers to the root of the libtorch distribution.");
+}
+def installedVersion = BUILD_VERSION_FILE.readLines()[0].replace("\"", "");
+def versionPattern = "^" + java.util.regex.Pattern.quote(LIBTORCH_VERSION) + "\\b.*";
+if (!(installedVersion ==~ versionPattern)) {
+  throw new RuntimeException(
+    "Found libtorch version ${installedVersion}, but build.gradle expects ${LIBTORCH_VERSION}.");
+}
+
 
 application {
     // Define the main class for the application.
     mainClass = 'rojion.App'
+    applicationDefaultJvmArgs = ["-Djava.library.path=$LIBTORCH_HOME/lib"]
 }
 
 tasks.named('test') {

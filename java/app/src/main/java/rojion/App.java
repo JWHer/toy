@@ -3,6 +3,11 @@
  */
 package rojion;
 
+import org.json.simple.JSONObject;
+
+import rojion.inference.InferenceFactory;
+import rojion.inference.TorchInference;
+
 public class App {
     public static final String VERSION = "0.0.1";
     public static final String APP_NAME = "ROJION";
@@ -12,7 +17,17 @@ public class App {
         return APP_NAME + " - " + VERSION + "\n" + DESCRIPTION;
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         System.out.println(new App().getGreeting());
+
+        var factory = new InferenceFactory();
+        try {
+            var inf = factory.create("DJL", new JSONObject());
+            var result = inf.infer();
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        
     }
 }
