@@ -22,7 +22,7 @@ public class App {
         var factory = new InferenceFactory();
         try {
             var inf = factory.create("YOLO", new JSONObject());
-            var result = inf.infer();
+            var result = inf.infer("https://github.com/ultralytics/yolov5/raw/master/data/images/bus.jpg");
             System.out.println(result);
         } catch (Exception e) {
             // TODO Auto-generated catch block

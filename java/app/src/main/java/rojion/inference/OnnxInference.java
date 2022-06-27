@@ -11,7 +11,7 @@ import org.json.simple.JSONObject;
 // import ai.onnxruntime.OrtSession;
 
 public class OnnxInference extends Inference {
-    public OnnxInference(JSONObject params) {
+    public OnnxInference(JSONObject params) throws IllegalArgumentException, IllegalAccessException {
         super(params);
     }
  
