@@ -11,7 +11,7 @@ public class TorchInference extends Inference {
     public static final String NAME = "TORCH";
     private String modelPath = ".models/yolov5s.pt";
 
-    public TorchInference(JSONObject params) {
+    public TorchInference(JSONObject params) throws IllegalArgumentException, IllegalAccessException {
         super(params);
         //TODO Auto-generated constructor stub
     }
