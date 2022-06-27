@@ -52,7 +52,7 @@ public class YoloInference extends DJLInference {
         int imageSize = 640;
 
         ZooModel<Image, DetectedObjects> model = new ModelBuilder(classes, modelName, engine)
-                .modelUrls(modelUrls).imageSize(imageSize).threshold(0.3f)
+                .modelUrls(modelUrls).imageSize(imageSize).threshold(threshold)
                 .build();
         Predictor<Image, DetectedObjects> predictor = model.newPredictor();
 

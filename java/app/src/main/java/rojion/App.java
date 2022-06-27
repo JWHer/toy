@@ -19,9 +19,12 @@ public class App {
     public static void main(String[] args) throws Exception {
         System.out.println(new App().getGreeting());
 
+        JSONObject params = new JSONObject();
+        params.put("threshold", 0.2f);
+
         var factory = new InferenceFactory();
         try {
-            var inf = factory.create("YOLO", new JSONObject());
+            var inf = factory.create("YOLO", params);
             var result = inf.infer("https://github.com/ultralytics/yolov5/raw/master/data/images/bus.jpg");
             System.out.println(result);
         } catch (Exception e) {

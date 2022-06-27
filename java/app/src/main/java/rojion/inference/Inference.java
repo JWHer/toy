@@ -31,10 +31,34 @@ public abstract class Inference {
     }
 
     protected void setParams() throws IllegalArgumentException, IllegalAccessException {
-        for (Field field : this.getClass().getFields()) {
-            String key = field.getName();
-            Object value = params.get(key);
-            if(value!=null) field.set(this, value);
+        Class<? extends Inference> clazz = this.getClass();
+        for (Object keyObj : params.keySet()) {
+            String key = (String) keyObj;
+            try {
+                Field field = getField(clazz, key);
+                field.set(this, params.get(key));
+            } catch (NoSuchFieldException e) {
+                logger.warning("field: [" + key + "] not exist");
+                e.printStackTrace();
+            } catch (SecurityException e) {
+                logger.severe("Security exception!");
+                e.printStackTrace();
+                throw e;
+            }
+        }
+    }
+
+    private static Field getField(Class clazz, String fieldName)
+            throws NoSuchFieldException {
+        try {
+            return clazz.getDeclaredField(fieldName);
+        } catch (NoSuchFieldException e) {
+            Class<? extends Inference> superClass = clazz.getSuperclass();
+            if (superClass == null) {
+                throw e;
+            } else {
+                return getField(superClass, fieldName);
+            }
         }
     }
 
