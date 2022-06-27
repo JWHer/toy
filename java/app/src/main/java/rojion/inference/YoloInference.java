@@ -25,10 +25,9 @@ import ai.djl.translate.Translator;
 public class YoloInference extends DJLInference {
     public YoloInference(JSONObject params) throws IllegalArgumentException, IllegalAccessException {
         super(params);
-
-        setDefaults();
     }
 
+    @Override
     protected void setDefaults() {
         super.setDefaults();
         classes = Arrays.asList(
