@@ -8,8 +8,9 @@ import org.json.simple.JSONObject;
 import ai.djl.Application;
 import ai.djl.MalformedModelException;
 import ai.djl.inference.Predictor;
+import ai.djl.modality.cv.ImageFactory;
 import ai.djl.modality.cv.output.DetectedObjects;
-import ai.djl.modality.cv.util.BufferedImageUtils;
+// import ai.djl.modality.cv.util.BufferedImageUtils;
 import ai.djl.repository.zoo.Criteria;
 import ai.djl.repository.zoo.ModelNotFoundException;
 import ai.djl.repository.zoo.ModelZoo;
@@ -27,7 +28,8 @@ public class DJLInference extends Inference{
 
     public Object infer() throws ModelNotFoundException, MalformedModelException, IOException, TranslateException{
         String url = "https://github.com/awslabs/djl/raw/master/examples/src/test/resources/dog_bike_car.jpg";
-        BufferedImage img = BufferedImageUtils.fromUrl(url);
+        ImageFactory fac = ImageFactory.getInstance();
+        BufferedImage img = (BufferedImage) fac.fromUrl(url);
 
         Criteria<BufferedImage, DetectedObjects> criteria =
                 Criteria.builder()

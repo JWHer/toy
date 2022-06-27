@@ -6,7 +6,6 @@ package rojion;
 import org.json.simple.JSONObject;
 
 import rojion.inference.InferenceFactory;
-import rojion.inference.TorchInference;
 
 public class App {
     public static final String VERSION = "0.0.1";
@@ -22,8 +21,9 @@ public class App {
 
         var factory = new InferenceFactory();
         try {
-            var inf = factory.create("DJL", new JSONObject());
+            var inf = factory.create("YOLO", new JSONObject());
             var result = inf.infer();
+            System.out.println(result);
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

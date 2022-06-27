@@ -1,14 +1,20 @@
 package rojion.inference;
 
+import java.util.List;
 import java.util.logging.Logger;
 
 import org.json.simple.JSONObject;
 
 public abstract class Inference {
   public static final String NAME = "DEFAULT";
-  private JSONObject params;
-  private static final Logger logger = Logger.getLogger("ROJION");
-  private final int gpuDeviceId = 0;
+  protected Logger logger = Logger.getLogger("ROJION");
+  protected JSONObject params;
+  protected List<String> classes;
+  protected String modelUrls;
+  protected String modelName;
+  protected String engine;
+  protected int gpuDeviceId = -1;
+  protected float threshold = 0.3f;
 
   public Inference(JSONObject params){
     this.params = params;

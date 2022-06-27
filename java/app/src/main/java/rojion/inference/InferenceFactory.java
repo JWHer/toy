@@ -10,7 +10,8 @@ public class InferenceFactory {
     static {
         infFactories = ImmutableMap.of(
             "Torch", TorchInference.class,
-            "DJL", DJLInference.class
+            "DJL", DJLInference.class,
+            "YOLO", YoloInference.class
         );
     }
 
