@@ -5,7 +5,9 @@ package rojion;
 
 import org.json.simple.JSONObject;
 
+import rojion.inference.DJLInference;
 import rojion.inference.InferenceFactory;
+import rojion.webcam.WebCam;
 
 public class App {
     public static final String VERSION = "0.0.1";
@@ -25,8 +27,10 @@ public class App {
         var factory = new InferenceFactory();
         try {
             var inf = factory.create("YOLO", params);
-            var result = inf.infer("https://github.com/ultralytics/yolov5/raw/master/data/images/bus.jpg");
-            System.out.println(result);
+            // var result = inf.infer("https://github.com/ultralytics/yolov5/raw/master/data/images/bus.jpg");
+            // System.out.println(result);
+            var webcam = new WebCam();
+            webcam.live(((DJLInference)inf).getPredictor());
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
