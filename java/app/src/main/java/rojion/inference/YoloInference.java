@@ -82,6 +82,15 @@ public class YoloInference extends DJLInference {
 
         // predictor.batchPredict(inputs)
         DetectedObjects objects = predictor.predict(input);
+        DetectedObjects converted = convYoloBox(objects);
+        saveBoundingBoxImage(input, converted, outputDir, outputName, outputType);
+
+        // predictor.close();
+        // model.close();
+        return converted;
+    }
+
+    public DetectedObjects convYoloBox(DetectedObjects objects){
         List<BoundingBox> boxes = new ArrayList<>();
         List<String> names = new ArrayList<>();
         List<Double> prob = new ArrayList<>();
@@ -98,12 +107,7 @@ public class YoloInference extends DJLInference {
             names.add(obj.getClassName());
             prob.add(obj.getProbability());
         }
-        DetectedObjects converted = new DetectedObjects(names, prob, boxes);
-        saveBoundingBoxImage(input, converted, outputDir, outputName, outputType);
-
-        // predictor.close();
-        // model.close();
-        return converted;
+        return new DetectedObjects(names, prob, boxes);
     }
 
     protected static class ModelBuilder extends DJLInference.ModelBuilder {
