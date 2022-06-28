@@ -26,23 +26,26 @@ dependencies {
     // This dependency is used by the application.
     implementation 'com.google.guava:guava:30.1.1-jre'
     implementation 'com.googlecode.json-simple:json-simple:1.1.1'
+    implementation 'org.openpnp:opencv:4.5.1-2'
+    // implementation 'org.bytedeco:opencv:4.5.5-1.5.7'
 
     implementation platform("ai.djl:bom:0.17.0")
+    implementation 'ai.djl:api'
+    implementation 'ai.djl.opencv:opencv'
+
     implementation 'ai.djl.pytorch:pytorch-engine'
     implementation 'ai.djl.pytorch:pytorch-jni:1.11.0-0.17.0'
+
+    // CPU architecture
     // implementation 'ai.djl.pytorch:pytorch-native-cpu:1.11.0:osx-x86_64'
-    implementation 'ai.djl.pytorch:pytorch-native-cpu-precxx11:1.11.0:linux-aarch64'
-    // implementation 'ai.djl.pytorch:pytorch-native-cpu:1.11.0:linux-x86_64' // linux-aarch64
-    implementation 'ai.djl:api'
-    // implementation "ai.djl:repository:0.4.1"
-    // runtimeOnly 'ai.djl.pytorch:pytorch-model-zoo:0.17.0'
-    // runtimeOnly 'ai.djl.pytorch:pytorch-native-auto:1.4.0'
+    // implementation 'ai.djl.pytorch:pytorch-native-cpu-precxx11:1.11.0:linux-aarch64'
+    implementation 'ai.djl.pytorch:pytorch-native-cpu:1.11.0:linux-x86_64'
 
     implementation "org.pytorch:pytorch_java_only:${LIBTORCH_VERSION}"
     // implementation 'com.microsoft.onnxruntime:onnxruntime:1.11.0'
     // implementation 'com.microsoft.onnxruntime:onnxruntime_gpu:1.11.0'
 
-    // runtimeOnly 'ai.djl.pytorch:pytorch-native-auto:1.9.1'
+    // runtimeOnly 'org.slf4j:slf4j-simple:1.7.32'
 }
 
 // def LIBTORCH_HOME = '/Users/jwher/dev/toy/java/libtorch' // System.getenv('LIBTORCH_HOME')
