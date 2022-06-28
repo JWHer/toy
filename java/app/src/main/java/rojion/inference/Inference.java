@@ -19,6 +19,7 @@ public abstract class Inference {
     protected String engine;
     protected String saveImageType = "png";
     protected int gpuDeviceId = -1;
+    protected int imageSize = 512;
     protected float threshold = 0.3f;
 
     public Inference(JSONObject params) throws IllegalArgumentException, IllegalAccessException {

@@ -1,6 +1,8 @@
 package rojion.inference;
 
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -44,21 +46,41 @@ public class YoloInference extends DJLInference {
                 "hair drier", "toothbrush");
         modelName = "yolov5s.torchscript";
         engine = "PyTorch";
+        imageSize = 640;
+    }
+
+    @Override
+    public ZooModel<Image, DetectedObjects> getModel()
+            throws ModelNotFoundException, MalformedModelException, IOException {
+        if (model == null) {
+            model = new ModelBuilder(classes, modelName, engine)
+                    .modelUrls(modelUrls).imageSize(imageSize).threshold(threshold)
+                    .build();
+        }
+        return model;
     }
 
     @Override
     public DetectedObjects infer(String imageUrl)
             throws ModelNotFoundException, MalformedModelException, IOException, TranslateException {
-        int imageSize = 640;
-
-        ZooModel<Image, DetectedObjects> model = new ModelBuilder(classes, modelName, engine)
-                .modelUrls(modelUrls).imageSize(imageSize).threshold(threshold)
-                .build();
-        Predictor<Image, DetectedObjects> predictor = model.newPredictor();
+        // ZooModel<Image, DetectedObjects> model = new ModelBuilder(classes, modelName, engine)
+        //     .modelUrls(modelUrls).imageSize(imageSize).threshold(threshold)
+        //     .build();
+        // Predictor<Image, DetectedObjects> predictor = model.newPredictor();
+        Predictor<Image, DetectedObjects> predictor = getPredictor();
 
         // ImageFactory.getInstance().fromUrl("https://github.com/ultralytics/yolov5/raw/master/data/images/bus.jpg");
         Image input = ImageFactory.getInstance().fromUrl(imageUrl);
+        Path imagePath = Paths.get(imageUrl);
+        String outputName = imagePath.getFileName().toString();
+        int extPos = outputName.lastIndexOf('.');
+        String outputType = "";
+        if (extPos != -1)
+            outputType = outputName.substring(extPos + 1);
+        else
+            outputType = saveImageType;
 
+        // predictor.batchPredict(inputs)
         DetectedObjects objects = predictor.predict(input);
         List<BoundingBox> boxes = new ArrayList<>();
         List<String> names = new ArrayList<>();
@@ -77,7 +99,10 @@ public class YoloInference extends DJLInference {
             prob.add(obj.getProbability());
         }
         DetectedObjects converted = new DetectedObjects(names, prob, boxes);
-        saveBoundingBoxImage(input, converted, outputDir, "name.png", saveImageType);
+        saveBoundingBoxImage(input, converted, outputDir, outputName, outputType);
+
+        // predictor.close();
+        // model.close();
         return converted;
     }
 
@@ -86,6 +111,7 @@ public class YoloInference extends DJLInference {
             super(classes, modelName, engine);
         }
 
+        @Override
         protected Translator<Image, DetectedObjects> translator(Pipeline pipeline) {
             return YoloV5Translator.builder()
                     .setPipeline(pipeline)

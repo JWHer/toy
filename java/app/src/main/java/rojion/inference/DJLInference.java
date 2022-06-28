@@ -9,6 +9,7 @@ import java.util.List;
 import org.json.simple.JSONObject;
 
 import ai.djl.MalformedModelException;
+import ai.djl.inference.Predictor;
 import ai.djl.modality.cv.Image;
 import ai.djl.modality.cv.output.DetectedObjects;
 import ai.djl.modality.cv.transform.Resize;
@@ -23,6 +24,21 @@ import ai.djl.translate.Translator;
 
 public class DJLInference extends Inference {
     public static final String NAME = "DJL";
+    protected ZooModel<Image, DetectedObjects> model;
+    public ZooModel<Image, DetectedObjects> getModel()
+            throws ModelNotFoundException, MalformedModelException, IOException {
+        if (model == null) {
+            model = new ModelBuilder(classes, modelName, engine).build();
+        }
+        return model;
+    }
+    protected Predictor<Image, DetectedObjects> predictor;
+    public Predictor<Image, DetectedObjects> getPredictor() throws ModelNotFoundException, MalformedModelException, IOException {
+        if (predictor==null){
+            predictor = getModel().newPredictor();
+        }
+        return predictor;
+    }
 
     public DJLInference(JSONObject params) throws IllegalArgumentException, IllegalAccessException {
         super(params);
@@ -75,8 +91,8 @@ public class DJLInference extends Inference {
         protected final List<String> classes;
         protected final String modelName;
         protected final String engine;
-        protected String modelUrls;
-        protected int imageSize = 640;
+        protected String modelUrls = "models/";
+        protected int imageSize = 512;
         protected float threshold = 0.3f;
 
         private Pipeline imagePipeline() {
