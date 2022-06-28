@@ -1,7 +1,12 @@
 package rojion.webcam;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import javax.swing.JOptionPane;
 
@@ -11,27 +16,39 @@ import org.opencv.imgproc.Imgproc;
 import org.opencv.videoio.VideoCapture;
 
 import ai.djl.inference.Predictor;
+import ai.djl.modality.Classifications;
 import ai.djl.modality.cv.Image;
 import ai.djl.modality.cv.ImageFactory;
+import ai.djl.modality.cv.output.BoundingBox;
 import ai.djl.modality.cv.output.DetectedObjects;
+import ai.djl.modality.cv.output.Rectangle;
 import ai.djl.translate.TranslateException;
 import nu.pattern.OpenCV;
 
 public class WebCam {
     protected Logger logger = Logger.getLogger("ROJION");
+    static {
+        OpenCV.loadShared();
+        System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+        // OpenCV.loadLocally();
+        
+        // System.loadLibrary("opencv_videoio_ffmpeg455_64");
+        // System.loadLibrary("opencv_ffmpeg300_64");
+        // -Djava.library.path=/usr/lib/jni/
+        // System.setProperty("java.library.path", "/usr/lib/jni/");
+        // libopencv4.2-jni
+        // System.loadLibrary("libopencv_java420");
+        
 
+        // System.out.println(Core.getBuildInformation());
+    }
+    
     public WebCam() {
     }
-
+    
     public void live(Predictor<Image, DetectedObjects> predictor) throws TranslateException {
+        System.load("/root/opencv/build/lib/libopencv_java460.so");
         // System.out.println(Core.getBuildInformation());
-        // OpenCV.loadShared();
-        // OpenCV.loadLocally();
-        // System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-        // System.loadLibrary("opencv_videoio_ffmpeg455_64");
-        // System.setProperty("java.library.path", "/lib64");
-        // System.loadLibrary("opencv_ffmpeg300_64");
-
         // VideoCapture capture = new VideoCapture(0);
         VideoCapture capture = new VideoCapture();
         // "rtsp://admin:snuai3883!@192.168.0.249:554/0/onvif/profile5/media.smp"
@@ -78,7 +95,36 @@ public class WebCam {
             }
             Image img = factory.fromImage(image);
             DetectedObjects detections = predictor.predict(img);
-            img.drawBoundingBoxes(detections);
+
+            // temp
+            int imageSize = 640;
+            List<BoundingBox> boxes = new ArrayList<>();
+            List<String> names = new ArrayList<>();
+            List<Double> prob = new ArrayList<>();
+            for (Classifications.Classification obj : detections.items()) {
+                DetectedObjects.DetectedObject objConvered = (DetectedObjects.DetectedObject) obj;
+                BoundingBox box = objConvered.getBoundingBox();
+                Rectangle rec = box.getBounds();
+                Rectangle rec2 = new Rectangle(
+                        rec.getX() / imageSize,
+                        rec.getY() / imageSize,
+                        rec.getWidth() / imageSize,
+                        rec.getHeight() / imageSize);
+                boxes.add(rec2);
+                names.add(obj.getClassName());
+                prob.add(obj.getProbability());
+            }
+            DetectedObjects conv = new DetectedObjects(names, prob, boxes);
+            // temporal
+
+            // System.out.println(detections);
+            img.drawBoundingBoxes(conv);
+            // try {
+            //     img.save(Files.newOutputStream(Paths.get("output/test.png")), "png");
+            // } catch (IOException e) {
+            //     // TODO Auto-generated catch block
+            //     e.printStackTrace();
+            // }
 
             frame.showImage(toBufferedImage((Mat) img.getWrappedImage()));
         }
