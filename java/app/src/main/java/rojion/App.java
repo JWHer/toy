@@ -23,6 +23,7 @@ public class App {
 
         JSONObject params = new JSONObject();
         params.put("threshold", 0.2f);
+        // params.put("modelName", "yolov5s.torchscript");
 
         var factory = new InferenceFactory();
         try {

@@ -38,7 +38,6 @@ public class WebCam {
         // System.setProperty("java.library.path", "/usr/lib/jni/");
         // libopencv4.2-jni
         // System.loadLibrary("libopencv_java420");
-        
 
         // System.out.println(Core.getBuildInformation());
     }
@@ -47,14 +46,19 @@ public class WebCam {
     }
     
     public void live(Predictor<Image, DetectedObjects> predictor) throws TranslateException {
-        System.load("/root/opencv/build/lib/libopencv_java460.so");
+        System.load("/home/jwher/dev/toy/java/linux/amd64/libopencv_java451.so");
+        // System.load("/usr/lib/jni/libopencv_java420.so");
         // System.out.println(Core.getBuildInformation());
+
         // VideoCapture capture = new VideoCapture(0);
         VideoCapture capture = new VideoCapture();
         // "rtsp://admin:snuai3883!@192.168.0.249:554/0/onvif/profile5/media.smp"
         // "rtsp://admin:init123!!@192.168.0.207:7001/6e03a7c5-e172-7eab-2e44-1b12a48aeed4"
         // "rtsp://admin:init123!!@192.168.0.207:7001/3fc9c921-2562-2252-7128-3dc2ec049d87"
-        capture.open("output/test.avi");
+        // "output/test.mp4"
+        // "gst-launch-1.0 -v playbin uri=file:///home/jwher/dev/toy/java/output/test.mp4 uridecodebin0::source::latency=300"
+        capture.open("output/test.mp4");
+
         // try {
         //     System.out.println("Delay waiting..");
         //     Thread.sleep(10000); // wait while stream open from dvr
@@ -131,6 +135,7 @@ public class WebCam {
 
         capture.release();
         predictor.close();
+        // System.out.println(Core.getBuildInformation());
     }
 
     private static BufferedImage toBufferedImage(Mat mat) {
