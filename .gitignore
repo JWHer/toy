@@ -1,5 +1,6 @@
 *.pyc
 *.class
+.uuid
 
 model/data/*
 model/result/*
