@@ -5,13 +5,27 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "type": "pwa-node",
+            "type": "node",
             "request": "launch",
-            "name": "Launch Program",
+            "name": "Start",
+            "preLaunchTask": "npm: build",
+            "program": "${workspaceFolder}/src/index.ts",
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "program": "${workspaceFolder}/index.js"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Launch Program",
+            "program": "${workspaceFolder}/src/index.ts",
+            "outFiles": [
+                "${workspaceFolder}/dist/**/*.js",
+                "!**/node_modules/**"
+            ],
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
         }
     ]
 }
