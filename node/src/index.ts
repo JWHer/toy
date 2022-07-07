@@ -26,12 +26,25 @@ function addc() {
 
 (() => {
     const Image = require('ascii-art-image');
-
     var img = new Image({
         filepath: "haha.ha/couple.jpg",
         alphabet:"wide",            // variant1, variant2, variant3, variant4, ultra-wide, wide, hatching, bits, binary, greyscale, blocks
     });
-    img.write((err, rendered)=>console.log(rendered));
+    // img.write((err, rendered)=>console.log(rendered));
+
+    const art = require('ascii-art');
+    art.font('word', 'Doom').lines(1, 6, (err, rendered)=>{
+        // art.image({
+        //     filepath: "haha.ha/couple.jpg",
+        //     alphabet: 'solid'
+        // }).lines(0, 100).overlay(rendered, {
+        //     x: 10, y: 10
+        // }, (err, final) => console.log(final));
+        img.overlay(rendered, {
+            x: 10, y: 10
+        }, (err, final) => console.log(final));
+    });
+
     // add()
     // addc()
 })();
