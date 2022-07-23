@@ -3,13 +3,17 @@
 # Variables
 VRAM_REQ=4096   #MiB
 UTIL_REQ=30     #%
-START_TIME=0
+START_TIME=23
 END_TIME=7
 # if you define date and number, it will works more day as you define.
-ALLOW_DAY=( 'Mon:0' 'Tue:0' 'Wed:0' 'Thu:0' 'Fri:0' 'Sat:2' 'Sun:1' )
+ALLOW_DAY=(
+    'Mon:0' 'Tue:0' 'Wed:0' 'Thu:0' 'Fri:2' 'Sat:1' 'Sun:0'
+    '월:0' '화:0' '수:0' '목:0' '금:2' '토:1' '일:0'
+)
 
-NAME=Daemon
+NAME=Daemon0
 # TODO cat /sys/class/net/e*/address
+TREX_PATH=/home/jwher/다운로드/
 POOL=stratum+tcp://asia1.ethermine.org:14444
 WALLET=0xCA22cE08A99fada0Cd63911fdaa6B0441fF622e6
 TEM_START=60
@@ -40,6 +44,7 @@ if [ "${GPU_UTIL%% %}" -gt $UTIL_REQ ]; then
 fi
 
 # check t-rex exist
+cd $TREX_PATH
 if ! [ $(command -v ./t-rex) ]; then
     echo 'T-Rex not exist'
     # wget https://github.com/trexminer/T-Rex/releases/download/0.26.4/t-rex-0.26.4-linux.tar.gz
@@ -57,23 +62,31 @@ fi
 # check time
 WEEKDAY=$(date +"%a")
 HOUR=$(date +"%H")
-# if (( HOUR > 7 )); then
-if [ $HOUR -le $START_TIME ] || [ $HOUR -ge $END_TIME ]; then
-    echo "Do not execute in daytime ($START_TIME~$END_TIME, current: $(date))"
-    exit -1
-fi
-
-# calculate time
-DURATION=$(expr $END_TIME - $START_TIME)
-if [ $DURATION -le 0 ]; then
-    DURATION=$(expr $DURATION + 24 )
-fi
-
-TIME=$(expr $DURATION \* 3600)
 for DAY in "${ALLOW_DAY[@]}"; do
     KEY="${DAY%%:*}"
     VALUE="${DAY##*:}"
+
+    # Check allowed day
     if [ $KEY == $WEEKDAY ]; then
+
+        # If not allowed
+        if [ $VALUE -eq 0 ]; then
+            if [ $HOUR -le $START_TIME ] || [ $HOUR -ge $END_TIME ]; then
+                echo "Do not execute in daytime ($START_TIME~$END_TIME, current: $(date))"
+                exit -1
+            fi
+
+        # else (allowed day)
+        else
+            START_TIME=$(date +"%H")
+        fi
+        # calculate time
+        DURATION=$(expr $END_TIME - $START_TIME)
+        if [ $DURATION -le 0 ]; then
+            DURATION=$(expr $DURATION + 24 )
+        fi
+        TIME=$(expr $DURATION \* 3600)
+
         TIME=$(expr $TIME + $VALUE \* 24 \* 3600)
         break
     fi
