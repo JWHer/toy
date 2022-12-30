@@ -1,8 +1,12 @@
-import os, torch, shutil, copy
-import torch.utils.data
+import os, shutil, copy, time
 from abc import ABC, abstractmethod
+from datetime import timedelta
 from loguru import logger
 # from thop import profile
+
+import torch
+import torch.utils.data
+from torch.utils.data import Dataset
 
 from optimizer.base_optimizer import OptimizerFactory
 
@@ -10,6 +14,7 @@ class Trainer(ABC):
     DEFAULT_CONFIG = {
         'lr_cfg': None,
         'start_epoch': 0,
+        'epoch': 0,
         'best_ap': 0,
         'log_dir': '.'
     }
@@ -40,7 +45,7 @@ class Trainer(ABC):
         dataset_cfg = data_cfg.pop(name, False)
         dataset = self.load_dataset(name, dataset_cfg)
 
-        for user_key in ['root_dir', 'annotation', 'compression']:
+        for user_key in ['root_dir', 'annotation', 'compression', 'ratio']:
             if user_key in dataset_cfg: del dataset_cfg[user_key]
         return torch.utils.data.DataLoader(dataset, **dataset_cfg)
 
@@ -54,7 +59,7 @@ class Trainer(ABC):
         return OptimizerFactory.get_optimizer(optimizer_name, **optimizer_cfg)
 
     @abstractmethod
-    def load_dataset(self, name:str, data_cfg:dict):
+    def load_dataset(self, name:str, data_cfg:dict) -> Dataset:
         images = []
         if 'compression' in data_cfg:
             #unzip
@@ -82,6 +87,11 @@ class Trainer(ABC):
     @abstractmethod
     def after_train(self):
         pass
+    
+    def time_scince(self, start):
+        now = time.time()
+        elapsed = now - start
+        return str(timedelta(seconds=elapsed))
 
     def save_ckpt(self, is_best=False):
         save_dir = self.log_dir

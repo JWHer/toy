@@ -22,6 +22,15 @@
       "args": ["mnist", "--gpus=0"]
     },
     {
+      "name": "Name",
+      "type": "python",
+      "request": "launch",
+      "program": "main.py",
+      "console": "integratedTerminal",
+      "justMyCode": false,
+      "args": ["name", "--gpus=0"]
+    },
+    {
       "name": "테스트",
       "type": "python",
       "request": "launch",

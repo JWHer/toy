@@ -1,0 +1,52 @@
+{
+  "task": "text",
+  "model": {
+    "backbone": {
+      "name": "rnn",
+      "input_size": 56,
+      "hidden_size": 128,
+      "output_size": 18
+    }
+  },
+  "optimizer": {
+    "name": "SGD",
+    "lr": 0.005,
+    "momentum": 0.5
+  },
+  "dataset": {
+    "train": {
+      "root_dir": "../data/names",
+      "ratio": 0.7,
+      "batch_size": 1,
+      "shuffle": true
+    },
+    "test": {
+      "root_dir": "../data/names",
+      "ratio": 0.3,
+      "batch_size": 1,
+      "shuffle": true
+    }
+  },
+  "max_epoch": 10,
+  "classes": [
+    "czech",
+    "german",
+    "arabic",
+    "japanese",
+    "chinese",
+    "vietnamese",
+    "russian",
+    "french",
+    "irish",
+    "english",
+    "spanish",
+    "greek",
+    "italian",
+    "portuguese",
+    "scottish",
+    "dutch",
+    "korean",
+    "polish"
+  ],
+  "log_dir": "./result/name/"
+}

@@ -27,8 +27,8 @@ class Classifier(nn.Module):
             raise NotImplementedError('Head not implemented')
 
     @abstractmethod
-    def forward(self, x, *kwargs):
-        features = self.backbone(x)
+    def forward(self, x, *args):
+        features = self.backbone(x, *args)
 
         # if self.neck is not None:
         #     features = self.neck(features)[-1]
