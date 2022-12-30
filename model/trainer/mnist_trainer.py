@@ -113,11 +113,11 @@ class MnistTrainer(Trainer):
         logger.info(f'Test set loss: [{test_loss:.4f}]')
 
         logger.info('Evaluation scores')
-        for key, value in metrics.items():
+        for key, value in test_metrics.items():
             logger.info(f"{key:<20}{value:.6f}")
             if 'tensorboard' in self.cfg:
                 self.tensorboard.add_scalar(f'val/{key}', value, self.epoch)
-        return metrics
+        return test_metrics
 
     def _eval_metric(self, logits, labels, training=False) -> dict:
         score, preds = torch.max(logits, dim=1)
