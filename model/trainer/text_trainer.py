@@ -68,7 +68,7 @@ class TextTrainer(Trainer):
         #     + (len(self.train_dataloader.dataset) % self.train_dataloader.batch_size > 0)
         batch_iter_num = len(self.train_dataloader.dataset)
         logger.info(
-            f'Train Epoch: [{self.epoch}/{self.max_epoch}]\tLoss: {running_loss/batch_iter_num:.6f}')
+            f'Train Epoch: [{self.epoch+1}/{self.max_epoch}]\tLoss: {running_loss/batch_iter_num:.6f}')
 
     def evaluate(self):
         logger.info("Start Evaluation")

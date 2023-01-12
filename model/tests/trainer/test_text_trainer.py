@@ -68,11 +68,17 @@ class TestTextTrainer:
         assert self.text_trainer.test_dataloader
         assert self.text_trainer.optimizer
 
+    @pytest.mark.skip()
     def test_train_dataloader(self):
+        """This case is too long.
+        So skip it if you don't need to validate your dataset.
+        """
         batch_size = 1
-        for idx, (input, category) in enumerate(self.text_trainer.train_dataloader):
-            assert input is not None
-            assert len(input) == batch_size
+        for idx, (line, answer, _input, category) in enumerate(self.text_trainer.train_dataloader):
+            assert line is not None
+            assert answer is not None
+            assert _input is not None
+            assert len(_input) == batch_size
             assert category is not None
         assert idx+1 == len(self.text_trainer.train_dataloader)
 
