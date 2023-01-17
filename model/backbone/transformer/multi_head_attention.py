@@ -29,7 +29,7 @@ class MultiHeadAttention(nn.Module):
         assert d_model % num_heads == 0
         self.d_model = d_model
         self.d_key = d_key if d_key is not None else d_model
-        self.d_value = d_value if d_value is not None else d_value
+        self.d_value = d_value if d_value is not None else d_model
         self.num_heads = num_heads
         # Paper: d_key = d_value = d_model / h = 64
         self.depth = d_model // num_heads

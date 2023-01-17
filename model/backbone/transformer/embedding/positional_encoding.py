@@ -11,7 +11,7 @@ class PositionalEncoding(nn.Module):
         PE(pos,2i) = sin(pos/10000^(2i/d_model))
         PE(pos,2i+1) = cos(pos/10000^(2i/d_model))
     """
-    def __init__(self, d_model: int, dropout: float = 0, max_len: int = 5000):
+    def __init__(self, d_model: int, max_len: int = 5000, dropout: float = 0):
         super().__init__()
         self.dropout = nn.Dropout(p=dropout)
         
@@ -26,5 +26,13 @@ class PositionalEncoding(nn.Module):
         self.register_buffer('pe', pe)
 
     def forward(self, x: Tensor) -> Tensor:
+        """Add positional encoding to the input embeddings
+
+        Args:
+            x (Tensor): input embedding
+
+        Returns:
+            Tensor: x += pos_enc
+        """
         x = x + self.pe[:x.size(0)]
         return self.dropout(x)

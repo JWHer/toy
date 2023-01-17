@@ -4,19 +4,17 @@ import torch
 from matplotlib import pyplot as plt
 from torch import Tensor
 
-from backbone.transformer.multi_head_attention import MultiHeadAttention
-from backbone.transformer.position_wise_feed_forward_network import PositionWiseFeedForwardNetwork
-from backbone.transformer.positional_encoding import PositionalEncoding
-from backbone.transformer.scaled_dot_product_attention import ScaledDotProductAttention
+from backbone.transformer import PositionalEncoding, MultiHeadAttention,\
+    PositionWiseFeedForwardNetwork, ScaledDotProductAttention, Transformer
 
 class TestTransformer:
     d_model = 512
-    max_len = 5000
+    max_len = 50
     
     def test_pos_encoding_plt(self):
         pos_encoding = PositionalEncoding(d_model=self.d_model, max_len=self.max_len)
         pos_encode = pos_encoding.forward(torch.zeros(self.max_len, 1, self.d_model)).permute(1, 0, 2)[0]
-        plt.pcolormesh(pos_encode)
+        plt.pcolormesh(pos_encode, cmap='RdBu')
         plt.xlabel('Depth')
         plt.xlim((0, 512))
         plt.ylabel('Position')
@@ -80,3 +78,23 @@ class TestTransformer:
         # [0, -inf, 0, -inf] -> softmax -> [0.5, 0, 0.5, 0]
         assert torch.allclose(attention, Tensor([[0.5, 0, 0.5, 0]]))
         assert torch.allclose(output, Tensor([[50.5, 2.5]]))
+
+    def test_padding_mask(self):
+        transformer = Transformer(vocab_size=10000, batch_size=1)
+        _input = Tensor([[1, 21, 777, 0, 0]])
+        mask = transformer.padding_mask(_input)
+        
+        # mask zero(<pad>) token
+        assert torch.equal(mask, Tensor([[0, 0, 0, 1, 1]]))
+
+    def test_look_ahead_mask(self):
+        transformer = Transformer(vocab_size=10000, batch_size=1)
+        _input = Tensor([[1, 2, 0, 4, 5]])
+        mask = transformer.look_ahead_mask(_input)
+        
+        # mask zero(<pad>) token
+        assert torch.equal(mask, Tensor([[0, 1, 1, 1, 1],
+                                         [0, 0, 1, 1, 1],
+                                         [0, 0, 1, 1, 1],
+                                         [0, 0, 1, 0, 1],
+                                         [0, 0, 1, 0, 0]]))
