@@ -10,13 +10,14 @@ def make_parser():
     parser.add_argument("config", type=str, help='config name or file path')
 
     parser.add_argument("--log_dir", type=str, help="log file directory")
+    parser.add_argument("--log_level", type=str, help="logger level", default='info')
     parser.add_argument("--train", type=str, help="train dataset dir")
     parser.add_argument("--valid", type=str, help="validation dataset dir")
     parser.add_argument("--test", type=str, help="test dataset dir")
 
     parser.add_argument("--gpus", type=str, help='gpu for training')
     parser.add_argument("--ckpt", type=str, help="checkpoint file path")
-    parser.add_argument("--resume", default=False, type=bool, help="resume training")
+    parser.add_argument("--resume", type=bool, help="resume training", default=False)
     return parser
 
 def parse_config(kwargs:argparse.Namespace) -> dict:
@@ -54,7 +55,9 @@ if __name__ == "__main__":
         os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID" 
         os.environ["CUDA_VISIBLE_DEVICES"]= kwargs['gpus']
     # kwargs["num_gpus"] = get_gpu_nums()
-    logger.remove()
-    logger.add(sys.stderr, level="INFO")
+    
+    if 'log_level' in kwargs:
+        logger.remove()
+        logger.add(sys.stderr, level=kwargs['log_level'].upper())
 
     main(**kwargs)
