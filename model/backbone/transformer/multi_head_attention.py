@@ -50,6 +50,7 @@ class MultiHeadAttention(nn.Module):
         value = self.split(value)
         
         output, attention = self.attention(query, key, value, mask)
+        # TODO Visualize attention map
         
         output = self.concat(output)
         output = self.weight_out(output)
@@ -69,5 +70,5 @@ class MultiHeadAttention(nn.Module):
         batch_size, num_heads, max_len, depth = tensor.size()
         
         # num_heads * depth -> concat -> d_model
-        tensor = tensor.transpose(1,2).contiguos().view(batch_size, max_len, self.d_model)
+        tensor = tensor.transpose(1,2).contiguous().view(batch_size, max_len, self.d_model)
         return tensor

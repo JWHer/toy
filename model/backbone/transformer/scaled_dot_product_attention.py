@@ -22,7 +22,12 @@ class ScaledDotProductAttention(nn.Module):
         score = (query @ key_t) / math.sqrt(depth)
         
         if mask is not None:
-            score = score.masked_fill(mask == 0, -1e9)
+            # 16 * (8 * 10000 * 10000)
+            batch_size = score.size(0)
+            score = torch.stack(tuple(
+                score[idx, :].masked_fill(mask[idx, :] == 1, -1e9)
+                for idx in range(batch_size)))
+            # score = score.masked_fill(mask == 1, -1e9)
             
         score = self.softmax(score)
         value = score @ value

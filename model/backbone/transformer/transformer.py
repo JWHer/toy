@@ -15,10 +15,9 @@ class Transformer(nn.Module):
         self.decoder = Decoder(vocab_size, d_model, max_len,
                                num_heads, ffn_hidden, num_layers, batch_size)
 
-    def forward(self, sorce, target):
-        source_mask = self.make_mask()
-
-        look_ahead_mask = self.make_mask(target, )
+    def forward(self, source, target):
+        padding_mask = self.padding_mask(source)
+        look_ahead_mask = self.look_ahead_mask(target)
 
         encoder_output = self.encoder(source, padding_mask)
         output = self.decoder(target, encoder_output,
@@ -35,13 +34,19 @@ class Transformer(nn.Module):
         Returns:
             Tensor: Padding Mask
         """
-        mask = torch.zeros(_input.size())
+        mask = torch.zeros(_input.size(), device=_input.device)
         return mask.masked_fill(_input == 0, 1)
 
     def look_ahead_mask(self, _input: Tensor):
-        sequence_len = _input.size()[-1]
-        mask = torch.ones(sequence_len, sequence_len).triu(diagonal=1)
-        return torch.maximum(mask, self.padding_mask(_input))
+        batch_size = _input.size(0)
+        sequence_len = _input.size(-1)
+        # mask = torch.ones(sequence_len, sequence_len, device=_input.device).triu(diagonal=1)
+        padding_mask = self.padding_mask(_input)
+        return torch.stack(tuple(
+            torch.maximum(
+                torch.ones(sequence_len, sequence_len, device=_input.device).triu(diagonal=1),
+                padding_mask[idx,:])
+            for idx in range(batch_size)))
     
     def num_parameters(self):
         return sum(p.numel() for p in self.parameters() if p.requires_grad)

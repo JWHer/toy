@@ -93,8 +93,22 @@ class TestTransformer:
         mask = transformer.look_ahead_mask(_input)
         
         # mask zero(<pad>) token
-        assert torch.equal(mask, Tensor([[0, 1, 1, 1, 1],
+        assert torch.equal(mask, Tensor([[[0, 1, 1, 1, 1],
                                          [0, 0, 1, 1, 1],
                                          [0, 0, 1, 1, 1],
                                          [0, 0, 1, 0, 1],
-                                         [0, 0, 1, 0, 0]]))
+                                         [0, 0, 1, 0, 0]]]))
+
+    def test_num_parameters(self):
+        transformer = Transformer(vocab_size=1000, batch_size=1)
+        
+        # Embedding = (512 * 5000) * 2
+        # 1024000
+        # Encoder = 6 * (512 * 512 * 3 + 2 * (512 * 2024))
+        # 17154048
+        # Decoder = 6 * (512 * 512 * 6 + 2 * (512 * 2024))
+        # 21872640
+        # Output = 512 * 1000
+        # 512000
+        # = 45380296
+        assert transformer.num_parameters()
