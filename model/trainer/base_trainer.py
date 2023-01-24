@@ -39,7 +39,7 @@ class Trainer(ABC):
         for key, value in Trainer.DEFAULT_CONFIG.items():
             if not hasattr(self, key) and value is not None: setattr(self, key, value)
 
-    def _get_dataloader(self, name='train'):
+    def _get_dataloader(self, name='train') -> torch.utils.data.DataLoader:
         data_cfg = self.dataset.copy()
         if name not in data_cfg: raise AttributeError(f'Dataset[{name}] was not provided')
         dataset_cfg = data_cfg.pop(name, False)
