@@ -1,0 +1,33 @@
+{
+    "task": "transformer",
+    "model": {
+      "backbone": {
+        "name": "transformer",
+        "d_model": 256,
+        "max_len": 1000,
+        "num_heads": 4,
+        "ffn_hidden": 1024,
+        "num_layers": 3
+      }
+    },
+    "optimizer": {
+      "name": "Adam",
+      "lr": 0.005,
+      "weight_decay": 0.0005,
+      "eps": 0.000000005
+    },
+    "scheduler": {
+        "verbose": true,
+        "factor": 0.9,
+        "patience": 10
+    },
+    "dataset": {
+      "train": {
+        "batch_size": 2
+      },
+      "dev": {}
+    },
+    "max_epoch": 3,
+    "log_dir": "./result/transformer/"
+  }
+  
