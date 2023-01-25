@@ -104,21 +104,23 @@ class TransformerTrainer(Trainer):
                 # if torch.backends.mps.is_available():
                 #     source = source.to('mps')
                 #     target = target.to('mps')
-                output = model(source, target)
+                output = self.model(source, target)
                 output = output.transpose(2,1)
                 loss = F.cross_entropy(output, target)
                 test_loss += loss.item()
 
-                source_words = self.test_dataloader.dataset.tensor2str(source.tolist())
-                target_words = self.test_dataloader.dataset.tensor2str(target.tolist())
-                output_words = output.max(dim=1)[1]
-                output_words = self.test_dataloader.dataset.tensor2str(output.tolist())
-                logger.debug(f"Question: {source_words}\
-                    Right Answer: {target_words}\
-                    Model Answer: {output_words}")
-                batch_bleu = bleu_score.sentence_bleu(target_words.split(), output_words.split())
-
-                bleus.append(batch_bleu)
+                batch_bleus = []
+                outputs = output.max(dim=1)[1]
+                for batch_idx in range(source.size(0)):
+                    source_words = self.test_dataloader.dataset.tensor2str(source[batch_idx,:].tolist())
+                    target_words = self.test_dataloader.dataset.tensor2str(target[batch_idx,:].tolist())
+                    output_words = self.test_dataloader.dataset.tensor2str(outputs[batch_idx,:].tolist())
+                    logger.debug(f"Question: {' '.join(source_words)}\n\Right Answer: {' '.join(target_words)}\n\Model Answer: {' '.join(output_words)}")
+                    if len(target_words) == 0: continue
+                    batch_bleu = bleu_score.sentence_bleu(target_words, output_words)
+                    batch_bleus.append(batch_bleu)
+                bleu = sum(batch_bleus) / len(batch_bleus)
+                bleus.append(bleu)
 
         test_loss /= len(self.train_dataloader)
         self.test_loss = test_loss
@@ -219,6 +221,7 @@ class SQuADataset(Dataset):
                 padding(torch.tensor(self.vocab(make_question_token(item)), dtype=torch.long) ),
                 padding(torch.tensor(self.vocab(self.tokenizer(item[ANSWER_IDX][0])), dtype=torch.long)),
             ) for item in self.text_iter ]
+        self.data = self.data[:len(self.data)//100]
 
     def __len__(self):
         return len(self.data)
@@ -227,6 +230,8 @@ class SQuADataset(Dataset):
         return self.data[idx]
     
     def tensor2str(self, tensor_list: list):
+        # FIXME dinamically remove special tokens
+        tensor_list = list(filter(lambda token: token>3, tensor_list))
         return self.vocab.lookup_tokens(tensor_list)
     
     def vocab_size(self):
